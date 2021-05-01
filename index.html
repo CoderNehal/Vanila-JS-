@@ -1,0 +1,172 @@
+<html>
+    <link rel="stylesheet" href="./test.css">
+    <body>
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+       <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+       <div class="sidebar">
+         <div class="closeSidebarDiv">
+          <button id="closeSidebar"><i class="fas fa-times"></i></button>
+         </div>
+         
+         <div class="Header">
+          <h4>Awesome<span>Wallpapers</span></h4>
+         </div> 
+         <div id="categories">  
+
+         </div>
+       </div>
+       <nav class="navbar">
+        <div class="container">
+      
+          <div class="navbar-header">
+            <button class="navbar-toggler" data-toggle="open-navbar1">
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+            <a href="#" onclick="location.reload();">
+              <h4>Awesome<span>Wallpapers</span></h4>
+            </a>
+          </div>
+      
+          <div class="navbar-menu" id="open-navbar1">
+            <ul class="navbar-nav">
+              <li class="active"><a href="#"  onclick="location.reload();">Home</a></li>
+              <li class="navbar-dropdown">
+                <a href="#" class="dropdown-toggler" data-dropdown='my-dropdown-id'>
+                  Categories <i class="fa fa-angle-down"></i>
+                </a>
+                <ul class="dropdown" id="my-dropdown-id">
+                  
+                </ul>
+              </li>
+              <li >
+                <a href="#" >
+                  Blog</i>
+                </a>
+                
+              </li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a id="signin" href="#">Sign in</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+      <div class="searchbar">
+        
+        <div class="search">
+          
+            <button  class="Categories">
+              <i class="fas fa-bars"></i>
+            </button>
+          <div class="">
+            <input type="text" class="Inp" placeholder="Search For Best wallpapers" />
+          <button class="Searchbtn" onclick="SearchImg()">Find</button>
+          </div>
+          
+          <div ></div>
+        </div>
+        
+       
+      </div >
+      
+<ul class="imges">
+ 
+</ul>
+
+
+    </body>
+</html>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+<script src="./forNavbar.js"></script>
+<script src="./script.js"></script>
+
+<script>
+
+
+var signin =$("#signin")
+if(localStorage.getItem('isLogged')==null)
+signin.text('Sign in')
+else
+signin.text('Log out')
+
+
+
+signin.click(function(){
+  if(signin.text()=="Sign in"){
+    signin.attr('href','./user.html')
+  }
+  else{
+    localStorage.clear();
+    signin.text('Sign in')
+    signin.attr('href','#')
+  }
+})
+
+$(document).on('keypress',function(e) {
+    if(e.which == 13) {
+      var val =$('.Inp').val()
+      SearchImg(val)
+    }
+});
+$('.Categories').click(function(){
+  $('.sidebar').css('width','25%')
+})
+const closeSidebar=()=>{
+  $('.sidebar').css('width','0%')
+}
+$('#closeSidebar').click(function() {closeSidebar()})
+
+
+ $(document).ready(FetchData= async(e)=> {
+     const response = await getImages('https://api.pexels.com/v1/curated?per_page=20')
+
+ const data = await response.json();
+ 
+ setImage(data)
+ })
+
+
+
+
+      getImages = async (URL) =>{
+         const response = await fetch(URL,{
+     method:'GET',
+     headers:{
+         Accept:'application/json',
+         Authorization:'563492ad6f91700001000001b2efa8a4ffd14023b69bb4566e765563'
+     }
+ })
+ return response; 
+     }
+
+    
+     setImage = async (data) =>{      
+         $('.imges').empty();
+         data.photos.forEach(pic => {
+     $('.imges').append('<div class="base"><a  href="'+pic.src.landscape+'" download><img src="'+pic.src.landscape+'"alt=""><button id="DownloadBtn"><i class="fas fa-download"></i></button></a> <button id="LoveBtn"><i  class="fas fa-heart"></i></button></div>');
+ })
+     }
+   
+ const SearchImg = async (val) =>{
+   if($('.sidebar').css('width','25%')){
+     closeSidebar()
+   }
+   
+ var img = val ? val : $('.Inp').val()
+ const response = await getImages(`https://api.pexels.com/v1/search?query=${img}&per_page=20`)
+const data = await response.json()
+
+setImage(data)
+
+
+   }
+   const categories = ['🌀 Abstract','🌳 Nature','🚗 Cars','🌊 Water','🐶 Animals','🎨 Art','🌁 City','🌈 Colors','🌹 Flowers','💖 Love','🎥 Movies','🎧 Music','🚀 Space','🏀 Sport','✈️ Travel','➕ Other']
+categories.forEach(type=>{
+  $('#categories').append(`<h3 id='${type}'  onclick='SearchImg(\"${type.substring(2)}\")'>${type}</h3>`)
+  $('#my-dropdown-id').append(`<li id='${type}'  onclick='SearchImg(\"${type.substring(2)}\")'>${type}</li>`)
+})
+</script>
